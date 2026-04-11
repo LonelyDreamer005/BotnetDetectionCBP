@@ -58,6 +58,7 @@ def main():
     parser = argparse.ArgumentParser(description="Botnet Detection CLI (4-class)")
     parser.add_argument("--data_dir", default="data", help="Directory containing datasets")
     parser.add_argument("--save_model", default="results/botnet_classifier.joblib", help="Path to save model")
+    parser.add_argument("--hardened", action="store_true", help="Drop suspicious laboratory artifacts for more realistic testing")
     args = parser.parse_args()
 
     df = load_data(args.data_dir)
@@ -65,7 +66,13 @@ def main():
         print("[!] No data found.")
         return
 
-    available = [f for f in SELECTED_FEATURES if f in df.columns]
+    suspicious = ['Init Fwd Win Bytes', 'ACK Flag Count', 'Protocol', 'SYN Flag Count']
+    if args.hardened:
+         print("[*] HARDENED MODE enabled. Dropping suspicious artifacts: ", suspicious)
+         available = [f for f in SELECTED_FEATURES if f in df.columns and f not in suspicious]
+    else:
+         available = [f for f in SELECTED_FEATURES if f in df.columns]
+
     X = df[available].copy()
     X.replace([np.inf, -np.inf], np.nan, inplace=True)
     X.fillna(0, inplace=True)
