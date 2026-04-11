@@ -1,51 +1,67 @@
-# Botnet Detection & Classification (ML)
+# 🛡️ Universal Botnet Detection & Classification
 
-A machine learning pipeline that **detects** and **classifies** botnet traffic from network flow data using the CIC-DDoS2019 dataset.
+A state-of-the-art machine learning pipeline for detecting and classifying multi-class network botnet attacks using the **CIC-DDoS2019** dataset and cross-dataset validation.
 
-## 🎯 What It Does
-- **Detection**: Is this network traffic malicious or benign?
-- **Classification**: What *type* of attack is it? (SYN Flood, LDAP Reflection)
+---
 
-## 📊 Results
+## 🚀 Overview
+This project evolves a standard binary detector into a **Universal Botnet Classifier**. It is designed not just to detect malicious activity, but to precisely identify the "Behavioral DNA" of specific attacks while remaining robust against laboratory artifacts and dataset bias.
 
+### 🎯 Capability
+- **Detection**: Identifies malicious vs. legitimate (Benign) traffic.
+- **Classification**: Categorizes attacks into **SYN**, **LDAP**, and **UDP** floods.
+- **Robustness**: Audited to ignore laboratory "cheat codes" and focus on flow behavior.
+- **Generalization**: Validated against external datasets (`botnet_sample.csv`).
+
+---
+
+## 📊 Performance (Universal Model)
 | Class | Precision | Recall | F1-Score |
 |:---|:---|:---|:---|
 | **Benign** | 1.00 | 1.00 | 1.00 |
-| **LDAP** | 1.00 | 1.00 | 1.00 |
-| **Syn** | 1.00 | 1.00 | 1.00 |
-| **UDP** | 1.00 | 1.00 | 1.00 |
+| **Attack (SYN/LDAP/UDP)** | 1.00 | 1.00 | 1.00 |
 | **Overall Accuracy** | | | **99.87%** |
 
-## 🚀 Features
-- **Multi-Class**: Classifies traffic as `Benign`, `Syn`, `LDAP`, or `UDP` (not just binary 0/1).
-- **Real Dataset**: CIC-DDoS2019 (88,504 network flows across 6 Parquet files).
-- **22 Behavioral Features**: Handpicked from 78 available columns (volume, timing, flags, rates).
-- **Feature Importance**: Shows which network behaviors matter most for detection.
-- **Model Export**: Saves trained classifier for deployment via `joblib`.
+---
 
-## 📁 Structure
-- `Botnet_Detection.ipynb`: **Primary interactive notebook** with visualizations.
-- `main.py`: CLI version of the pipeline.
-- `data/`: SYN and LDAP training/testing Parquet files.
-- `docs/`: In-depth explanations of the ML process.
-- `results/`: Saved model, confusion matrix, and feature importance plots.
+## 📓 The Multi-Stage Workflow
+The project is structured as 4 progressive laboratories to demonstrate the scientific process:
 
-## 🛠️ Getting Started
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Run the CLI pipeline:
-   ```bash
-   python main.py
-   ```
-3. Or open `Botnet_Detection.ipynb` in Jupyter/VS Code.
+1. **[Main Lab](Botnet_Detection.ipynb)**: Building the 4-class detector.
+2. **[Robustness Audit](Botnet_Detection_Robust.ipynb)**: Auditing for data leakage and laboratory artifacts.
+3. **[Generalization Test](Botnet_Detection_Generalization.ipynb)**: Testing the model on completely unseen, external networks.
+4. **[Universal Brain](Botnet_Detection_Universal.ipynb)**: Mixing multiple datasets to create a unified, robust classifier.
 
-## 🔬 Top Features for Detection
-| Feature | Importance |
-|:---|:---|
-| Avg Packet Size | 0.1830 |
-| ACK Flag Count | 0.1257 |
-| Init Fwd Win Bytes | 0.1200 |
-| Packet Length Mean | 0.0967 |
-| Packet Length Std | 0.0915 |
+---
+
+## 🐍 CLI Usage
+You can train and evaluate the model directly from your terminal:
+
+```bash
+# Standard training (All features)
+python main.py
+
+# Hardened training (Drops suspicious laboratory artifacts)
+python main.py --hardened
+```
+
+---
+
+## 📖 Documentation & Guides
+We have provided comprehensive guides for different levels of expertise:
+- **[Ultra-Clear Summary](ULTRA_CLEAR_SUMMARY.md)**: A 2-minute visual roadmap of the project.
+- **[Detailed Guide](DETAILED_GUIDE.md)**: A basic, conceptually focused explanation of "How it works."
+- **[Technical Evolution](PROJECT_EXPLANATION.md)**: A deeper dive into the stages and technical challenges.
+- **[Dataset Details](docs/dataset.md)**: Information on the CIC-DDoS2019 data.
+
+---
+
+## 🛠️ Technology Stack
+- **Language**: Python 3.12+
+- **Data**: Pandas, PyArrow (Parquet), NumPy
+- **ML**: Scikit-Learn (Random Forest, StandardScaler)
+- **Viz**: Matplotlib, Seaborn
+
+---
+**Maintained by**: Vinay
+**Dataset Source**: [Canadian Institute for Cybersecurity (CIC)](https://www.unb.ca/cic/datasets/ddos-2019.html)
