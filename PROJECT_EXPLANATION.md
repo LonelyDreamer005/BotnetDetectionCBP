@@ -56,14 +56,17 @@ The model is currently performing with **99.87% accuracy**.
 
 ## 5. How to use what we built
 
-### 📓 The Notebook (`Botnet_Detection.ipynb`)
-Use this if you want to **see** the data. It has charts, confusion matrices, and step-by-step code explanations. It's the "Lab" version of the project.
+### 📓 The Main Notebook (`Botnet_Detection.ipynb`)
+The primary lab for the 4-class (Benign/Syn/LDAP/UDP) detector.
 
-### 🔬 The Robustness Test (`Botnet_Detection_Robust.ipynb`)
-This notebook is the "Audit." It finds the "Cheat Features" and tests the model without them to prove that it is actually learning behavior, not just identity.
+### 🔍 The Robustness Test (`Botnet_Detection_Robust.ipynb`)
+The audit notebook where we find "cheating" features and test the model's true behavioral intelligence.
 
 ### 🔬 The Generalization Test (`Botnet_Detection_Generalization.ipynb`)
-The ultimate proof. We take the model trained on one network and test it on a completely different sample (`botnet_sample.csv`). If it can still find the botnets in a new environment, it proves the intelligence is **real**, not just luck.
+The "Zero-Shot" test where we try to catch botnets in a completely different network (`botnet_sample.csv`).
+
+### 🛡️ The Universal Classifier (`Botnet_Detection_Universal.ipynb`)
+The final stage where we **mix multiple datasets** to create a single, unified "Universal Botnet Brain" that works everywhere.
 
 ### 🐍 The CLI Tool (`main.py`)
 Use this for **automation**. You can run a single command in your terminal:
