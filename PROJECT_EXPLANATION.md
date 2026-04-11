@@ -59,6 +59,12 @@ The model is currently performing with **99.87% accuracy**.
 ### 📓 The Notebook (`Botnet_Detection.ipynb`)
 Use this if you want to **see** the data. It has charts, confusion matrices, and step-by-step code explanations. It's the "Lab" version of the project.
 
+### 🔬 The Robustness Test (`Botnet_Detection_Robust.ipynb`)
+This notebook is the "Audit." It finds the "Cheat Features" and tests the model without them to prove that it is actually learning behavior, not just identity.
+
+### 🔬 The Generalization Test (`Botnet_Detection_Generalization.ipynb`)
+The ultimate proof. We take the model trained on one network and test it on a completely different sample (`botnet_sample.csv`). If it can still find the botnets in a new environment, it proves the intelligence is **real**, not just luck.
+
 ### 🐍 The CLI Tool (`main.py`)
 Use this for **automation**. You can run a single command in your terminal:
 ```bash
