@@ -1,49 +1,77 @@
 # Evaluation Metrics
 
-Accuracy alone is not enough for cybersecurity projects. If 99% of traffic is benign, a model that simply predicts "Benign" every time would have 99% accuracy but would fail to detect any botnets.
+## Why Accuracy Alone Is Not Enough
+
+If 90% of traffic is benign, a model that always predicts "Benign" gets 90% accuracy but catches **zero** attacks. For cybersecurity, we need per-class metrics.
 
 ## Key Metrics
 
-### 1. Accuracy
-- The percentage of correct predictions (both botnet and benign).
-- `(TP + TN) / Total`
+### Accuracy
+- Overall percentage of correct predictions across all classes.
+- Formula: `(Correct Predictions) / (Total Predictions)`
 
-### 2. Precision
-- Out of all samples predicted as **Botnet**, how many were actually botnets?
-- High precision means fewer **False Alarms**.
-- `TP / (TP + FP)`
+### Precision (per class)
+- Out of all traffic the model flagged as a specific attack, how many actually were?
+- **High precision** = fewer false alarms.
+- Example: If precision for `Syn` is 0.97, then 97% of traffic flagged as SYN flood truly was a SYN flood.
 
-### 3. Recall (Sensitivity)
-- Out of all the **actual Botnets** in the data, how many did we catch?
-- High recall means we didn't miss many attacks (**Low False Negatives**).
-- `TP / (TP + FN)`
+### Recall (per class)
+- Out of all actual attacks of a specific type, how many did the model catch?
+- **High recall** = fewer missed attacks.
+- Example: If recall for `LDAP` is 0.95, the model caught 95% of all LDAP reflection attacks.
 
-### 4. F1-Score
-- The harmonic mean of Precision and Recall. It provides a single score that balances both.
+### F1-Score
+- Harmonic mean of Precision and Recall. Balances both into one number.
+- Useful when classes are imbalanced.
 
-## The Confusion Matrix (Security Perspective)
+## The Multi-Class Confusion Matrix
 
-A table layout that allows visualization of performance by comparing Actual vs Predicted labels.
+A 3×3 matrix that shows exactly how the classifier handles each class:
 
-| Result | Security Meaning | Practical Consequence |
-| :--- | :--- | :--- |
-| **True Positive (TP)** | Botnet caught | **Success**: Attack blocked. |
-| **True Negative (TN)** | Normal traffic allowed | **Success**: Business as usual. |
-| **False Positive (FP)** | Normal flagged as Botnet | **False Alarm**: Annoyed users or blocked services. |
-| **False Negative (FN)** | Botnet missed | **Security Breach**: Data loss or system hijack. |
+```
+              Predicted
+              Benign  Syn   LDAP
+Actual Benign   TP     FP    FP
+       Syn      FN     TP    FP
+       LDAP     FN     FP    TP
+```
+
+### What to look for:
+- **Diagonal (TP)**: High values = model is classifying correctly.
+- **Off-diagonal**: These are misclassifications. 
+  - `Syn` classified as `Benign` = **Missed SYN attack** (dangerous)
+  - `Benign` classified as `Syn` = **False alarm** (annoying but safe)
+
+## Security Perspective
+
+| Error Type | Meaning | Risk Level |
+|:---|:---|:---|
+| **Syn → Benign** (FN) | SYN flood not detected | 🔴 **Critical** — server goes down |
+| **LDAP → Benign** (FN) | Reflection attack missed | 🔴 **Critical** — bandwidth exhausted |
+| **Benign → Syn** (FP) | Normal traffic blocked | 🟡 **Low** — service disruption |
+| **Syn → LDAP** (misclass) | Wrong attack type identified | 🟢 **Minimal** — still detected as malicious |
 
 > [!IMPORTANT]
-> In cybersecurity, a **False Negative (FN)** is often considered much more dangerous than a **False Positive (FP)** because it represents a missed attack.
+> Missing an attack entirely (False Negative) is far more dangerous than misidentifying the attack type. Even if the model calls a SYN flood an "LDAP attack," it still flagged it as malicious — the security team can investigate.
 
-## Current Model Performance (SYN/LDAP)
-| Metric | Score |
-| :--- | :--- |
-| **Accuracy** | **97.82%** |
-| **Precision** | **0.98** |
-| **Recall** | **0.98** |
-| **F1-Score** | **0.98** |
+## Current Model Results
 
-### Confusion Matrix Highlights
-*   **1641 Normals** correctly allowed.
-*   **1629 Botnets** correctly caught.
-*   Only **35 Botnets missed** (False Negatives).
+| Class | Precision | Recall | F1-Score | Support |
+|:---|:---|:---|:---|:---|
+| Benign | 1.00 | 1.00 | 1.00 | 6,677 |
+| LDAP | 1.00 | 0.99 | 0.99 | 665 |
+| Syn | 1.00 | 1.00 | 1.00 | 8,767 |
+| **Overall Accuracy** | | | **0.9985** | **16,109** |
+
+### Confusion Matrix
+```
+              Predicted
+              Benign  LDAP  Syn
+Actual Benign  6672     0    5
+       LDAP      3   659    3
+       Syn      12     1  8754
+```
+
+- Only **24 misclassifications** out of 16,109 test samples.
+- **0 attacks missed as Benign** in the LDAP class.
+- Only **12 SYN attacks** misclassified as Benign (0.14% miss rate).

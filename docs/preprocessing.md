@@ -2,32 +2,36 @@
 
 Before training a model, the raw network traffic data must be transformed into a format suitable for machine learning algorithms.
 
-## Steps Involved
+## Pipeline Steps
 
-### 1. Data Cleaning
-- **Missing Values**: We remove or impute rows with null values (though network flow logs are usually complete).
-- **Infinite Values**: Some rate calculations (like packets/sec) can result in infinity if the duration is zero. These are capped or removed.
+### 1. Label Normalization
+The CIC-DDoS2019 dataset uses inconsistent label names across files (e.g., `LDAP` in training vs `DrDoS_LDAP` in testing). We normalize all labels to three consistent classes: `Benign`, `Syn`, `LDAP`.
 
-### 2. Feature Selection
-- **The IP Pitfall**: We MUST drop columns like `srcip` and `dstip`. 
-- **Why?** If the model learns that "192.168.1.5 is a botnet," it is simply memorizing an address, not learning the *behavior* of the attack. If the botnet moves to a different IP, the model will fail.
-- **Dropping IDs**: Columns like `id` and `stime` (timestamp) are also removed to prevent the model from learning "time-based" patterns that won't exist in the future.
+### 2. Class Filtering
+We filter the data to only include our target classes, dropping rare labels like `NetBIOS` (only 246 samples in the LDAP training file) to keep the model focused.
 
-### 3. Categorical Encoding
-- **Why it's needed**: Machine learning models only speak "numbers." 
-- **Method**: We use **Label Encoding** for protocols (e.g., TCP becomes 0, UDP becomes 1).
+### 3. Feature Selection
+From 78 available network flow features, we select **22 key behavioral features** across five categories:
 
-### 4. Feature Scaling (Standardization)
-- **Problem**: `sbytes` (source bytes) can be 5,000,000 while `dur` (duration) is 0.002.
-- **Solution**: We use the **StandardScaler**. It calculates the mean and standard deviation for each feature and shifts the values so they are centered around 0 with a standard deviation of 1. This prevents the "large numbers" from dominating the model's logic.
+| Category | Features | Why It Matters |
+|:---|:---|:---|
+| **Volume** | Total Fwd/Bwd Packets, Fwd/Bwd Packet Length | Botnets generate high packet volumes |
+| **Timing** | Flow Duration, Flow/Fwd/Bwd IAT | Bots have unnaturally regular timing |
+| **Rate** | Flow Bytes/s, Packets/s, Fwd/Bwd Packets/s | Attack traffic has extreme throughput |
+| **Packet Stats** | Packet Length Mean/Std, Avg Packet Size | SYN floods use tiny packets |
+| **TCP Flags** | SYN/ACK/RST Flag Count | SYN floods have abnormal flag ratios |
+| **Protocol** | Protocol, Init Fwd Win Bytes, Down/Up Ratio | Distinguishes TCP vs UDP attacks |
 
-### 5. Data Splitting
-- The data is split into **Training (80%)** and **Testing (20%)** sets to evaluate how the model performs on unseen data.
+### 4. Handling Infinities and NaN
+CICFlowMeter frequently produces `Infinity` values in rate calculations (e.g., `Flow Bytes/s` when duration is zero). These are replaced with `NaN` and then filled with `0`.
 
-## Current Selected Features
-For maximum accuracy with minimal overhead, the project currently uses:
-- **`dur`**: Flow Duration.
-- **`proto`**: Protocol (TCP/UDP).
-- **`spkts`**: Total Forward Packets.
-- **`sbytes`**: Total Length of Forward Packets.
-- **`dbytes`**: Total Length of Backward Packets.
+### 5. Feature Scaling (StandardScaler)
+- **Problem**: `Flow Bytes/s` can be in the millions while `SYN Flag Count` is 0-2.
+- **Solution**: StandardScaler centers each feature around 0 with unit variance.
+- This prevents large-valued features from dominating the model's decisions.
+
+### 6. Train/Test Separation
+
+> **Important lesson**: The official CIC-DDoS2019 train/test files have inconsistent feature distributions — many byte-level features are zero in the SYN testing file but non-zero in training. This caused 0% SYN detection when using the file-based split.
+
+**Our approach**: We merge all four files and perform a **stratified 80/20 random split**. The `stratify` parameter ensures each class (Benign, Syn, LDAP) maintains its ratio in both the training and testing sets. This produces reliable, reproducible evaluation.
