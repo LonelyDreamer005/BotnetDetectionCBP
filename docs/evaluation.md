@@ -54,24 +54,24 @@ Actual Benign   TP     FP    FP
 > [!IMPORTANT]
 > Missing an attack entirely (False Negative) is far more dangerous than misidentifying the attack type. Even if the model calls a SYN flood an "LDAP attack," it still flagged it as malicious — the security team can investigate.
 
-## Current Model Results
+## Current Model Results (4-Class Classification)
 
 | Class | Precision | Recall | F1-Score | Support |
 |:---|:---|:---|:---|:---|
-| Benign | 1.00 | 1.00 | 1.00 | 6,677 |
-| LDAP | 1.00 | 0.99 | 0.99 | 665 |
+| Benign | 1.00 | 1.00 | 1.00 | 7,652 |
+| LDAP | 1.00 | 1.00 | 1.00 | 665 |
 | Syn | 1.00 | 1.00 | 1.00 | 8,767 |
-| **Overall Accuracy** | | | **0.9985** | **16,109** |
+| UDP | 1.00 | 1.00 | 1.00 | 5,042 |
+| **Overall Accuracy** | | | **0.9987** | **22,126** |
 
-### Confusion Matrix
+### Confusion Matrix Structure
+With 4 classes, the matrix is now a 4x4 grid:
 ```
               Predicted
-              Benign  LDAP  Syn
-Actual Benign  6672     0    5
-       LDAP      3   659    3
-       Syn      12     1  8754
+              Benign  LDAP  Syn  UDP
+Actual Benign   ...    ...   ...  ...
+       LDAP     ...    ...   ...  ...
+       Syn      ...    ...   ...  ...
+       UDP      ...    ...   ...  ...
 ```
-
-- Only **24 misclassifications** out of 16,109 test samples.
-- **0 attacks missed as Benign** in the LDAP class.
-- Only **12 SYN attacks** misclassified as Benign (0.14% miss rate).
+The extremely high accuracy indicates that the 22 behavioral features selected are distinct enough to separate Benign/Syn/LDAP/UDP traffic with near-perfection.

@@ -34,4 +34,4 @@ CICFlowMeter frequently produces `Infinity` values in rate calculations (e.g., `
 
 > **Important lesson**: The official CIC-DDoS2019 train/test files have inconsistent feature distributions — many byte-level features are zero in the SYN testing file but non-zero in training. This caused 0% SYN detection when using the file-based split.
 
-**Our approach**: We merge all four files and perform a **stratified 80/20 random split**. The `stratify` parameter ensures each class (Benign, Syn, LDAP) maintains its ratio in both the training and testing sets. This produces reliable, reproducible evaluation.
+**Our approach**: We merge all available files and perform a **stratified 80/20 random split**. The `stratify` parameter ensures each class (Benign, Syn, LDAP, UDP) maintains its ratio in both the training and testing sets. This produces reliable, reproducible evaluation.

@@ -11,13 +11,14 @@ A machine learning pipeline that **detects** and **classifies** botnet traffic f
 | Class | Precision | Recall | F1-Score |
 |:---|:---|:---|:---|
 | **Benign** | 1.00 | 1.00 | 1.00 |
-| **LDAP** | 1.00 | 0.99 | 0.99 |
+| **LDAP** | 1.00 | 1.00 | 1.00 |
 | **Syn** | 1.00 | 1.00 | 1.00 |
-| **Overall Accuracy** | | | **99.85%** |
+| **UDP** | 1.00 | 1.00 | 1.00 |
+| **Overall Accuracy** | | | **99.87%** |
 
 ## 🚀 Features
-- **Multi-Class**: Classifies traffic as `Benign`, `Syn`, or `LDAP` (not just binary 0/1).
-- **Real Dataset**: CIC-DDoS2019 (80,543 network flows across 4 Parquet files).
+- **Multi-Class**: Classifies traffic as `Benign`, `Syn`, `LDAP`, or `UDP` (not just binary 0/1).
+- **Real Dataset**: CIC-DDoS2019 (88,504 network flows across 6 Parquet files).
 - **22 Behavioral Features**: Handpicked from 78 available columns (volume, timing, flags, rates).
 - **Feature Importance**: Shows which network behaviors matter most for detection.
 - **Model Export**: Saves trained classifier for deployment via `joblib`.
