@@ -1,61 +1,45 @@
 const projectData = [
     {
-        title: "The Training Lab",
-        subtitle: "Multi-Class Pattern Recognition",
-        markdown: `Founded on the **CIC-DDoS2019 dataset**, this stage establishes our core classification pipeline. We target four primary network states: **Benign (Normal)**, **SYN Flood**, **LDAP Reflection**, and **UDP Volumetric** attacks. The model utilizes a Random Forest architecture to learn the distinct 22-feature behavioral signature of each botnet type.`,
-        code: `# Initial Model setup
-from sklearn.ensemble import RandomForestClassifier
-model = RandomForestClassifier(n_estimators=100)
-model.fit(X_train, y_train)`,
-        outputTitle: "Initial Evaluation",
+        title: "Stage 1 | Multi-Class Classification",
+        subtitle: "Building the Supervised Learning Pipeline",
+        markdown: `The initial phase focuses on developing a high-fidelity classifier using the CIC-DDoS2019 dataset. We implemented a technical workflow involving Label Normalization (merging benign and attack sub-categories) and a Stratified 80/20 Train-Test Split. The core engine is a Random Forest Ensemble trained to categorize traffic into four distinct behavioral classes: Benign, SYN Flood, LDAP Reflection, and UDP Volumetric attacks.`,
+        outputTitle: "Phase 1: Laboratory Metrics",
         accuracy: "99.87%",
-        secondaryLabel: "Training Split",
-        secondaryValue: "80/20 Stratified",
+        secondaryLabel: "Algorithm",
+        secondaryValue: "Random Forest",
         recall: "99.8%",
         image: "/static/img/confusion_matrix.png"
     },
     {
-        title: "Robustness Audit",
-        subtitle: "Identifying Laboratory Artifacts",
-        markdown: `Achieving 99% accuracy can be misleading if the model is relying on **Laboratory Artifacts** (Data Leakage). Our audit revealed that specific "Identity Bytes"—traits inherent to the lab recording enviornment rather than actual attack behavior—were inflating results. We created a **Hardened Model** by dropping these features, forcing the AI to focus purely on **Flow Behavior**.`,
-        code: `# Drop Identity Artifacts
-hard_features = [f for f in ALL if f not in ['Init Win', 'ACK Count']]
-# Enforce behavioral learning
-hard_model.fit(X_train[hard_features], y_train)`,
-        outputTitle: "Hardened Audit",
+        title: "Stage 2 | Robustness Audit",
+        subtitle: "Leakage Detection & Feature Selection",
+        markdown: `Exposing laboratory artifacts is critical for model integrity. We performed a Feature Importance Analysis which identified high-leakage parameters like Init Fwd Win Bytes. These features often contain static values inherent to lab environments rather than malicious behavior. By excluding these identity-biased artifacts, we developed a Hardened Model that relies purely on behavioral timing and volume metrics.`,
+        outputTitle: "Phase 2: Audit Results",
         accuracy: "99.70%",
-        secondaryLabel: "Leakage Detected",
-        secondaryValue: "5840 Win-Size",
+        secondaryLabel: "Audit Status",
+        secondaryValue: "Leaks Mitigated",
         recall: "99.2%",
         image: "/static/img/feature_importance.png"
     },
     {
-        title: "Cross-Dataset Test",
-        subtitle: "The Generalization Gap",
-        markdown: `A security model is only as good as its performance on **unseen networks**. We tested our lab-trained model against a completely independent dataset. This exposed a massive **Generalization Gap**: the model identified benign traffic perfectly but failed to recognize external botnet styles. This proved that a "Botnet" looks different depending on the network environment.`,
-        code: `# Test on External Botnet Sample
-predictions = model.predict(external_data)
-# Finding: 0% overlap in SYN fingerprints
-# Resulting in total classification failure`,
-        outputTitle: "Reality Stress Test",
+        title: "Stage 3 | Generalization Test",
+        subtitle: "Cross-Environment Performance Analysis",
+        markdown: `To evaluate real-world utility, the model was subjected to a Zero-Shot Test against an external network dataset. This revealed a significant Generalization Gap: while the model maintained high precision for benign traffic, the botnet detection recall dropped to approximately 3%. This identified a Model Blindness to attack patterns outside of its primary training environment, necessitating a more diverse data strategy.`,
+        outputTitle: "Phase 3: Reality Stress Test",
         accuracy: "81.02%",
-        secondaryLabel: "Botnet Recall",
-        secondaryValue: "3.2% [FAILURE]",
+        secondaryLabel: "Detection Gap",
+        secondaryValue: "Model Blindness",
         recall: "95% (Benign)",
         image: "/static/img/confusion_matrix.png"
     },
     {
-        title: "The Universal Brain",
-        subtitle: "A Global Sentinel",
-        markdown: `To bridge the generalization gap, we developed the **Universal Classifier**. By mixing data from multiple network sources and standardizing on a **Unified Behavioral Schema**, we created a global brain. It no longer relies on a single lab's traits; instead, it understands the universal mechanics of DDoS attacks regardless of the network origin.`,
-        code: `# Mixed Dataset Strategy
-df_universal = pd.concat([dataset_a, dataset_b])
-# Final Production Classifier
-brain.fit(df_universal[behavioral_schema], labels)`,
-        outputTitle: "Universal Performance",
+        title: "Stage 4 | Universal Brain",
+        subtitle: "Dataset Fusion & Global Deployment",
+        markdown: `The final stage leverages Dataset Fusion to create a robust, network-agnostic detector. We merged the deep laboratory data with external samples and standardized them into a Unified Behavioral Schema. This Universal Brain generalizes across different network signatures, effectively identifying botnets regardless of their network origin or specific environment artifacts.`,
+        outputTitle: "Phase 4: Unified Evaluation",
         accuracy: "99.87%",
-        secondaryLabel: "Network Agnostic",
-        secondaryValue: "True",
+        secondaryLabel: "Deployment",
+        secondaryValue: "Universal (Agonstic)",
         recall: "99.9%",
         image: "/static/img/confusion_matrix.png"
     }
@@ -70,10 +54,9 @@ function switchTab(index) {
 
     document.getElementById('notebook-content').innerHTML = `
         <div class="content-section">
-            <h2><span style="color: var(--accent-color)">#</span> ${data.title}</h2>
-            <p class="markdown-text" style="font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">${data.subtitle}</p>
-            <p class="markdown-text">${data.markdown}</p>
-            <pre><code>${data.code}</code></pre>
+            <h2 style="font-size: 1.6rem;"><span style="color: var(--accent-color)">#</span> ${data.title}</h2>
+            <p class="markdown-text" style="font-weight: 700; color: var(--accent-color); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">${data.subtitle}</p>
+            <p class="markdown-text" style="font-size: 1.1rem; line-height: 1.8;">${data.markdown}</p>
         </div>
     `;
 
