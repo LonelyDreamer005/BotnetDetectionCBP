@@ -1,99 +1,98 @@
 const projectData = [
     {
-        title: "Feature 0: Multi-Class Lab",
-        subtitle: "Building the Foundation",
-        markdown: `Developed a robust **4-class classification** system to identify specific botnet attack signatures. We merged disparate training and testing sets to eliminate distribution bias and performed a **stratified split** to ensure model stability across all attack profiles.`,
-        code: `model = RandomForestClassifier(
-    n_estimators=200, 
-    max_depth=30, 
-    random_state=42
-)
-model.fit(X_train_scaled, y_train)
-# Classes: Benign, Syn, LDAP, UDP`,
-        outputTitle: "Experimental Results",
+        title: "The Training Lab",
+        subtitle: "Multi-Class Pattern Recognition",
+        markdown: `Founded on the **CIC-DDoS2019 dataset**, this stage establishes our core classification pipeline. We target four primary network states: **Benign (Normal)**, **SYN Flood**, **LDAP Reflection**, and **UDP Volumetric** attacks. The model utilizes a Random Forest architecture to learn the distinct 22-feature behavioral signature of each botnet type.`,
+        code: `# Initial Model setup
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)`,
+        outputTitle: "Initial Evaluation",
         accuracy: "99.87%",
-        precision: "1.00",
-        recall: "1.00",
+        secondaryLabel: "Training Split",
+        secondaryValue: "80/20 Stratified",
+        recall: "99.8%",
         image: "/static/img/confusion_matrix.png"
     },
     {
-        title: "Feature 1: Robustness Audit",
-        subtitle: "Exposing Lab Artifacts",
-        markdown: `Performed a thorough audit of the feature set to detect **Data Leakage**. We identified that specific TCP window sizes (like 5840) were acting as "cheat codes" for the AI. By training a **Hardened Model** without these artifacts, we enforced learning of actual network behavior.`,
-        code: `SUSPICIOUS = ['Init Fwd Win Bytes', 'ACK Flag Count']
-HARDENED_FEATURES = [f for f in ALL if f not in SUSPICIOUS]
-
-# Retraining without "Cheat" features
-model_b.fit(X_train_hardened, y_train)`,
-        outputTitle: "Audit Impact",
+        title: "Robustness Audit",
+        subtitle: "Identifying Laboratory Artifacts",
+        markdown: `Achieving 99% accuracy can be misleading if the model is relying on **Laboratory Artifacts** (Data Leakage). Our audit revealed that specific "Identity Bytes"—traits inherent to the lab recording enviornment rather than actual attack behavior—were inflating results. We created a **Hardened Model** by dropping these features, forcing the AI to focus purely on **Flow Behavior**.`,
+        code: `# Drop Identity Artifacts
+hard_features = [f for f in ALL if f not in ['Init Win', 'ACK Count']]
+# Enforce behavioral learning
+hard_model.fit(X_train[hard_features], y_train)`,
+        outputTitle: "Hardened Audit",
         accuracy: "99.70%",
-        precision: "0.99",
-        recall: "0.99",
+        secondaryLabel: "Leakage Detected",
+        secondaryValue: "5840 Win-Size",
+        recall: "99.2%",
         image: "/static/img/feature_importance.png"
     },
     {
-        title: "Feature 2: Generalization Test",
-        subtitle: "Zero-Shot Cross-Dataset Validation",
-        markdown: `Tested the model's performance on a completely different environment using the **botnet_sample.csv**. This revealed a significant **Generalization Gap**: while benign traffic was correctly identified at 95%, botnet recall dropped to 3%. This proved the need for multi-source training.`,
-        code: `X_ext = map_to_cic_schema(external_csv)
-predictions = model.predict(X_ext)
-
-# Reality Check:
-# Benign Recall: 0.95
-# Botnet Recall: 0.03 [ALERT]`,
-        outputTitle: "Generalization Gap",
-        accuracy: "81.00%",
-        precision: "0.09",
-        recall: "0.03",
+        title: "Cross-Dataset Test",
+        subtitle: "The Generalization Gap",
+        markdown: `A security model is only as good as its performance on **unseen networks**. We tested our lab-trained model against a completely independent dataset. This exposed a massive **Generalization Gap**: the model identified benign traffic perfectly but failed to recognize external botnet styles. This proved that a "Botnet" looks different depending on the network environment.`,
+        code: `# Test on External Botnet Sample
+predictions = model.predict(external_data)
+# Finding: 0% overlap in SYN fingerprints
+# Resulting in total classification failure`,
+        outputTitle: "Reality Stress Test",
+        accuracy: "81.02%",
+        secondaryLabel: "Botnet Recall",
+        secondaryValue: "3.2% [FAILURE]",
+        recall: "95% (Benign)",
         image: "/static/img/confusion_matrix.png"
     },
     {
-        title: "Feature 3: Universal Brain",
-        subtitle: "Unified Multi-Source Training",
-        markdown: `The final stage involved **Dataset Mixing**. We combined the massive CIC-DDoS2019 logs with real-world samples to create a **Universal Classifier**. By standardizing on 5 core behavioral features (Duration, Packets, Bytes), we created a detector that works across any network.`,
-        code: `df_unified = pd.concat([df_cic, df_csv])
-features = ['dur', 'spkts', 'dpkts', 'sbytes', 'dbytes']
-
-# Training the Universal Brain
-model_universal.fit(X_unified, y_unified)`,
-        outputTitle: "Unified Performance",
+        title: "The Universal Brain",
+        subtitle: "A Global Sentinel",
+        markdown: `To bridge the generalization gap, we developed the **Universal Classifier**. By mixing data from multiple network sources and standardizing on a **Unified Behavioral Schema**, we created a global brain. It no longer relies on a single lab's traits; instead, it understands the universal mechanics of DDoS attacks regardless of the network origin.`,
+        code: `# Mixed Dataset Strategy
+df_universal = pd.concat([dataset_a, dataset_b])
+# Final Production Classifier
+brain.fit(df_universal[behavioral_schema], labels)`,
+        outputTitle: "Universal Performance",
         accuracy: "99.87%",
-        precision: "1.00",
-        recall: "1.00",
+        secondaryLabel: "Network Agnostic",
+        secondaryValue: "True",
+        recall: "99.9%",
         image: "/static/img/confusion_matrix.png"
     }
 ];
 
 function switchTab(index) {
-    // Update active tab UI
     document.querySelectorAll('.tab').forEach((tab, i) => {
         tab.classList.toggle('active', i === index);
     });
 
     const data = projectData[index];
 
-    // Update Notebook Box
     document.getElementById('notebook-content').innerHTML = `
         <div class="content-section">
             <h2><span style="color: var(--accent-color)">#</span> ${data.title}</h2>
-            <p class="markdown-text"><strong>${data.subtitle}</strong><br><br>${data.markdown}</p>
+            <p class="markdown-text" style="font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">${data.subtitle}</p>
+            <p class="markdown-text">${data.markdown}</p>
             <pre><code>${data.code}</code></pre>
         </div>
     `;
 
-    // Update Output Box
     document.getElementById('output-content').innerHTML = `
         <div class="content-section">
             <h2>📊 ${data.outputTitle}</h2>
             <img src="${data.image}" class="output-image" alt="Visual Results">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-label">Model Accuracy</div>
                     <div class="stat-value" style="color: var(--accent-color)">${data.accuracy}</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Recall (Botnet)</div>
-                    <div class="stat-value" style="color: ${index === 2 ? 'var(--warning)' : 'var(--success)'}">${data.recall}</div>
+                    <div class="stat-label">${data.secondaryLabel}</div>
+                    <div class="stat-value">${data.secondaryValue}</div>
+                </div>
+                <div class="stat-card" style="grid-column: span 2">
+                    <div class="stat-label">System Recall</div>
+                    <div class="stat-value" style="color: ${index === 2 ? '#ff6b6b' : 'var(--success)'}">${data.recall}</div>
                 </div>
             </div>
         </div>
