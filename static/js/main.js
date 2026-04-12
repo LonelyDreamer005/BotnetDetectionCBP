@@ -30,7 +30,7 @@ const projectData = [
         secondaryLabel: "Detection Gap",
         secondaryValue: "Model Blindness",
         recall: "95% (Benign)",
-        image: "/static/img/confusion_matrix.png"
+        image: "/static/img/gen_gap_chart.png"
     },
     {
         title: "Stage 4 | Universal Brain",
@@ -41,7 +41,7 @@ const projectData = [
         secondaryLabel: "Deployment",
         secondaryValue: "Universal (Agonstic)",
         recall: "99.9%",
-        image: "/static/img/confusion_matrix.png"
+        image: "/static/img/universal_chart.png"
     }
 ];
 
