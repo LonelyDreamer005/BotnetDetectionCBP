@@ -45,7 +45,10 @@ const projectData = [
     }
 ];
 
+let currentStage = 0;
+
 function switchTab(index) {
+    currentStage = index;
     document.querySelectorAll('.tab').forEach((tab, i) => {
         tab.classList.toggle('active', i === index);
     });
@@ -80,6 +83,16 @@ function switchTab(index) {
             </div>
         </div>
     `;
+}
+
+function nextStage() {
+    let next = (currentStage + 1) % projectData.length;
+    switchTab(next);
+}
+
+function prevStage() {
+    let prev = (currentStage - 1 + projectData.length) % projectData.length;
+    switchTab(prev);
 }
 
 // Initial load
