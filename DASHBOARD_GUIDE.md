@@ -1,34 +1,33 @@
-# 📊 Botnet Detection Dashboard Guide
+# Dashboard Technical Documentation: Botnet Detection UI
 
-This guide explains the visual components and the technical narrative displayed in the **Web Dashboard** (`app.py`).
+This guide details the visual components and technical narrative for the **Web Dashboard** (`app.py`).
 
-## 🖥️ UI Overview
-The dashboard is split into two primary interactable sections:
+## 🖥️ User Interface Structure
 
 ### 1. Stage Context (Left Panel)
-Displays the technical workflow of each development phase:
-- **Title & Subtitle**: Identifies the specific focus of the research stage.
-- **Narrative**: A concise, technical explanation of the "Why" and "How" for that stage.
-- **Documentation Style**: Highlights key concepts like **Label Normalization**, **Leakage Mitigation**, and **Dataset Fusion**.
+Details the technical workflow of each development phase:
+- **Phase Title**: Identification of the specific research stage.
+- **Narrative**: Technical explanation of the methodology and rationale.
+- **Concepts**: Highlights core techniques such as **Label Normalization**, **Leakage Mitigation**, and **Dataset Fusion**.
 
 ### 2. Experimental Output (Right Panel)
-Displays the resulting metrics and visualizations:
-- **Phase Metrics**: Provides unique statistics (Accuracy, Algorithm type, Audit status, or Deployment type).
-- **System Recall**: A safety-focused metric tracking the model's ability to catch malicious traffic.
-- **Visualization Chart**: Displaying Stage-specific Confusion Matrices or Feature Importance plots.
+Displays metrics and data visualizations resulting from each stage:
+- **Phase Metrics**: Provides statistical data including Accuracy, Algorithm type, Audit status, and Deployment type.
+- **System Recall**: Security-focused metric tracking the model's performance in identifying malicious traffic.
+- **Visualization Component**: Stage-specific Confusion Matrices and Feature Importance plots.
 
 ---
 
-## 🛤️ The 4-Stage Journey
+## 🛤️ Four-Stage Pipeline
 
 ### Stage 1: Multi-Class Classification
-Foundational training on the **CIC-DDoS2019** dataset using 22 features and 4 labels. Establish initial behavioral benchmarks.
+Initial training on the **CIC-DDoS2019** dataset utilizing 22 features and 4 labels. Baseline behavioral metrics established.
 
 ### Stage 2: Robustness Audit
-The "Reality Shield" phase. We audit the model for **Laboratory Leakage** (Identity Bytes) and harden it by focusing only on behavioral timing and volume.
+Focuses on identification and mitigation of **Laboratory Leakage** (Identity Bytes). Model resilience enhanced by focusing on behavioral timing and volume features.
 
-### Stage 3: Generalization Test
-The "Reality Check." We stress-test the lab-trained model on unseen network traffic. This stage highlights the **Generalization Gap** where models can become "blind" to external attack styles.
+### Stage 3: Generalization Analysis
+Stress-testing of the laboratory-trained model on unseen network traffic to measure the **Generalization Gap** and mitigate environmental bias.
 
-### Stage 4: Universal Brain
-The final evolution. Using **Dataset Mixing**, we create a robust, network-agnostic sentinel that understands the universal language of DDoS regardless of the network environment.
+### Stage 4: Universal Sentinel
+Final developmental phase utilizing **Multi-Source Data Fusion**. Creation of a robust, network-agnostic detector for global application.
